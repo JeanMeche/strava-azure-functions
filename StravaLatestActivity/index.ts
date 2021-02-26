@@ -9,26 +9,34 @@ const httpTrigger: AzureFunction = function (context: Context, req: HttpRequest)
     };
 
     return getLatestActivity()
-        .then(response => Promise.all([
-            getActivityById(response.id),
+        .then(([rideActivity, runActivity]) => Promise.all([
+            getActivityById(rideActivity.id),
+            getActivityById(runActivity.id),
             getAthleteStats()
         ]))
-        .then(([activity, stats]) => {
+        .then(([rideActivity, runActivity, stats]) => {
             const returnObject = {
-                id: activity.id,
-                name: activity.name,
-                distance: activity.distance,
-                start_date: activity.start_date,
-                moving_time: activity.moving_time,
-                year_to_date_ride_total_distance: stats.ytd_ride_totals.distance,
-                photoUrl: undefined
+                run: {
+                    id: rideActivity.id,
+                    name: rideActivity.name,
+                    distance: rideActivity.distance,
+                    start_date: rideActivity.start_date,
+                    moving_time: rideActivity.moving_time,
+                    photoUrl: Object.values(rideActivity.photos?.primary?.urls ?? {}).pop(),
+                    year_to_date_total_distance: stats.ytd_ride_totals.distance,
+                    totalTarget: 6000 * 1000
+                },
+                ride: {
+                    id: runActivity.id,
+                    name: runActivity.name,
+                    distance: runActivity.distance,
+                    start_date: runActivity.start_date,
+                    moving_time: runActivity.moving_time,
+                    photoUrl: Object.values(runActivity.photos?.primary?.urls ?? {}).pop(),
+                    year_to_date_total_distance: stats.ytd_run_totals.distance,
+                    totalTarget: 500 * 1000
+                },
             };
-
-            if (activity.photos.count > 0) {
-                const photoUrls = Object.values(activity.photos.primary.urls);
-
-                returnObject.photoUrl = photoUrls.pop();
-            }
 
             return context.res.json(returnObject);
         });
@@ -38,11 +46,16 @@ const httpTrigger: AzureFunction = function (context: Context, req: HttpRequest)
         return myfetch<DetailedActivity>(url)
     }
 
-    function getLatestActivity(): Promise<ActivitySummary> {
+    function getLatestActivity(): Promise<[ActivitySummary, ActivitySummary]> {
         const url = "https://www.strava.com/api/v3/athlete/activities";
 
         return myfetch<ActivitySummary[]>(url)
-            .then(activities => activities.find(ac => ac.type === 'Ride'));
+            .then(activities => {
+                return [
+                    activities.find(ac => ac.type === 'Ride'),
+                    activities.find(ac => ac.type === 'Run')
+                ]
+            });
     }
 
     function getAthleteStats(athleteId = 6914721): Promise<ActivityStats> { // 6914721 that's me 
@@ -54,7 +67,7 @@ const httpTrigger: AzureFunction = function (context: Context, req: HttpRequest)
     function myfetch<T>(url: string): Promise<T> {
         return fetch(url, { headers })
             .then(async (resp: Response) => {
-                if(resp.status >= 400) {
+                if (resp.status >= 400) {
                     const json = await resp.json();
                     throw new Error(`${resp.status} - ${resp.statusText} - ${json.message}`);
                 }
@@ -125,3 +138,4 @@ interface PhotoSummary_primary {
     id: number,
     urls: Record<string, string>
 }
+
