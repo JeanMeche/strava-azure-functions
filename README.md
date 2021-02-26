@@ -1,3 +1,5 @@
+![logos](image.png)
+
 # strava-azure-functions
 Azure Functions to retrieve Strava Data 
 

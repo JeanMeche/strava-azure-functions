@@ -5,14 +5,11 @@ import azure from 'azure-storage';
 const tableName = 'azerty';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-
-    context.log('HTTP trigger function processed a request.');
-    const name = (req.query.name || (req.body && req.body.name));
     const responseMessage = "Ok"
-
     context.res = {
         body: responseMessage
     };
+
     const clientId = context.bindings.inputTable.find(row => row.RowKey === 'ClientID').Value;
     const clientSecret = context.bindings.inputTable.find(row => row.RowKey === 'ClientSecret').Value;
     const code = req.query['code'];
