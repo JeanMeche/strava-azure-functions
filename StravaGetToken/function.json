@@ -1,0 +1,26 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "table",
+      "name":"inputTable",
+      "tableName": "azerty",
+      "connection": "jeanmechestrava_STORAGE",
+      "direction": "in"
+    }
+  ],
+  "scriptFile": "../dist/StravaGetToken/index.js"
+}

@@ -1,0 +1,28 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "table",
+      "name": "inputTable",
+      "tableName": "azerty",
+      "connection": "jeanmechestrava_STORAGE",
+      "partitionKey": "Token",
+      "rowKey": "ClientID",
+      "direction": "in"
+    }
+  ],
+  "scriptFile": "../dist/StravaAuthorize/index.js"
+}
