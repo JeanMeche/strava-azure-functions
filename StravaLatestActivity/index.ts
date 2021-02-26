@@ -52,7 +52,15 @@ const httpTrigger: AzureFunction = function (context: Context, req: HttpRequest)
 
 
     function myfetch<T>(url: string): Promise<T> {
-        return fetch<ActivitySummary[]>(url, { headers }).then((resp) => resp.json())
+        return fetch(url, { headers })
+            .then(async (resp: Response) => {
+                if(resp.status >= 400) {
+                    const json = await resp.json();
+                    throw new Error(`${resp.status} - ${resp.statusText} - ${json.message}`);
+                }
+
+                return resp.json();
+            })
     }
 };
 
