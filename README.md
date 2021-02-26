@@ -8,4 +8,15 @@ An Azure Timer Function to renew the AccessToken every 5 hours with the refresh 
 
 ## Strava Latest Activity
 
-An Azure HTTP trigger function to retrieve my latest strava actitvity using the AccessToken stored in the Azure-storage table
+An Azure HTTP trigger function to retrieve my latest run/ride activities using the AccessToken stored in the Azure-storage table
+
+## Strava Authorize 
+
+An Azure HTTP trigger function to redirect to the Strava authorize page.  
+The ClientID is pulled from the Azure-storage table.   
+The authentication callback is the next function 
+
+## Strava Get Token 
+An Azure HTTP trigger function to request the token using the code returned by the authentication callback.  
+The ClientID/Client secret are pulled from the Azure-storage table.   
+
