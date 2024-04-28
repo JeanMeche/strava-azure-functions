@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = function (context: Context, req: HttpRequest)
           moving_time: rideActivity.moving_time,
           photoUrl: Object.values(rideActivity.photos?.primary?.urls ?? {}).pop(),
           year_to_date_total_distance: stats.ytd_ride_totals.distance,
-          totalTarget: 4000 * 1000,
+          totalTarget: 3000 * 1000,
         },
         run: {
           id: runActivity.id,
